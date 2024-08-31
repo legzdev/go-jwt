@@ -5,7 +5,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -31,7 +30,6 @@ func New(claims Claims) *Token {
 }
 
 func (token *Token) Encoded() (string, error) {
-
 	var encodedToken string
 
 	headerJson, err := json.Marshal(token.Header)
@@ -39,7 +37,7 @@ func (token *Token) Encoded() (string, error) {
 		return encodedToken, err
 	}
 
-	payloadJson, err := token.Payload.Marshal()
+	payloadJson, err := json.Marshal(token.Payload)
 	if err != nil {
 		return encodedToken, err
 	}
@@ -48,7 +46,6 @@ func (token *Token) Encoded() (string, error) {
 }
 
 func (token *Token) Signed(secretKey []byte) (string, error) {
-
 	encodedToken, err := token.Encoded()
 	if err != nil {
 		return "", err
@@ -61,11 +58,10 @@ func (token *Token) Signed(secretKey []byte) (string, error) {
 }
 
 func (token *Token) Validate(secretKey []byte) error {
-
 	currentTime := time.Now().Unix()
 
 	if token.Payload.GetExpirationTime() <= currentTime {
-		return errors.New("expired token")
+		return ErrExpiredToken
 	}
 
 	encodedToken, err := token.Encoded()
@@ -79,19 +75,18 @@ func (token *Token) Validate(secretKey []byte) error {
 	}
 
 	if !bytes.Equal(signature, token.Signature) {
-		return errors.New("invalid signature")
+		return ErrInvalidSignature
 	}
 
 	return nil
 }
 
 func parse(tokenString string, claims Claims) (*Token, error) {
-
 	tokenParts := strings.Split(tokenString, ".")
 	tokenPartsLenght := len(tokenParts)
 
 	if tokenPartsLenght != 2 && tokenPartsLenght != 3 {
-		return nil, errors.New("invalid token format")
+		return nil, ErrInvalidTokenFormat
 	}
 
 	tokenHeader, err := b64decode(tokenParts[0])
@@ -144,7 +139,6 @@ func ParseWithClaims(tokenString string, claims Claims) (*Token, error) {
 }
 
 func Sign(encodedToken string, secretKey []byte) ([]byte, error) {
-
 	hasher := hmac.New(sha256.New, secretKey)
 
 	if _, err := hasher.Write([]byte(encodedToken)); err != nil {

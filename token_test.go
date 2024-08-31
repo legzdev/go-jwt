@@ -10,7 +10,6 @@ import (
 var secretKey = []byte("mysecretkey")
 
 func TestMain(t *testing.T) {
-
 	now := time.Now()
 
 	claims := &jwt.CommonClaims{
