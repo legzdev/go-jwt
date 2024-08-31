@@ -9,12 +9,12 @@ Simple, minimal and zero dependency Go JWT library.
 
 </div>
 
-<br>
 
 ## Installation
 ```shell
 go get -u github.com/ghostsama2503/go-jwt
 ```
+
 
 ## Building and signing a token
 ```go
@@ -48,6 +48,7 @@ func main() {
 }
 ```
 
+
 ## Parsing and validating a token
 ```go
 package main
@@ -75,6 +76,7 @@ func main() {
 	fmt.Println("valid token")
 }
 ```
+
 
 ## Disclaimer
 
