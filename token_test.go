@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	jwt "github.com/ghostsama2503/go-jwt"
+	"github.com/legzdev/go-jwt"
 )
 
 var secretKey = []byte("mysecretkey")
